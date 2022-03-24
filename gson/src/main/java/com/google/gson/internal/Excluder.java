@@ -162,12 +162,7 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
       return true;
     }
 
-    if (requireExpose) {
-      Expose annotation = field.getAnnotation(Expose.class);
-      if (annotation == null || (serialize ? !annotation.serialize() : !annotation.deserialize())) {
-        return true;
-      }
-    }
+    if (extracted(field, serialize)) return true;
 
     if (!serializeInnerClasses && isInnerClass(field.getType())) {
       return true;
@@ -187,6 +182,16 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
       }
     }
 
+    return false;
+  }
+
+  private boolean extracted(Field field, boolean serialize) {
+    if (requireExpose) {
+      Expose annotation = field.getAnnotation(Expose.class);
+      if (annotation == null || (serialize ? !annotation.serialize() : !annotation.deserialize())) {
+        return true;
+      }
+    }
     return false;
   }
 
