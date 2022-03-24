@@ -140,10 +140,10 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
       }
 
       private TypeAdapter<T> delegate() {
-        TypeAdapter<T> d = delegate;
-        return d != null
-            ? d
-            : (delegate = gson.getDelegateAdapter(Excluder.this, type));
+        TypeAdapter<T> delegate = this.delegate;
+        return delegate != null
+            ? delegate
+            : (this.delegate = gson.getDelegateAdapter(Excluder.this, type));
       }
     };
   }
@@ -162,7 +162,7 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
       return true;
     }
 
-    if (extracted(field, serialize)) return true;
+    if (isRequireExpose(field, serialize)) return true;
 
     if (!serializeInnerClasses && isInnerClass(field.getType())) {
       return true;
@@ -185,7 +185,7 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
     return false;
   }
 
-  private boolean extracted(Field field, boolean serialize) {
+  private boolean isRequireExpose(Field field, boolean serialize) {
     if (requireExpose) {
       Expose annotation = field.getAnnotation(Expose.class);
       if (annotation == null || (serialize ? !annotation.serialize() : !annotation.deserialize())) {
